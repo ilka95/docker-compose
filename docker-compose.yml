@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+ nginx:
+  image: nginx
+  container_name: nginx-container  
+  ports:   
+   - 80:80
+  links:
+   - php
+  volumes:
+   - ./nginx/:/etc/nginx/conf.d/       
+   - ./www/html/:/var/www/html/
+  extra_hosts:
+   - "nginx:127.0.0.1"   
+  depends_on:
+   php:
+    condition: service_healthy
+
+ php:
+  build: .
+  container_name: php
+  expose:
+   - 9000
+  volumes:
+   - ./www/html/:/var/www/html/
+  healthcheck:
+    test: ["CMD-SHELL", "curl nginx | grep works"] 
